@@ -1,0 +1,33 @@
+Option Compare Database
+Option Explicit
+
+Private Sub cmdSaveandNew_Click()
+DoCmd.RunCommand acCmdSaveRecord
+Dim oOutlook As Outlook.Application
+Dim oEmailItem As MailItem
+' prevent 429 error, if outlook not open
+On Error Resume Next
+Err.Clear
+Set oOutlook = GetObject(, "Outlook.application")
+If Err.Number <> 0 Then
+Set oOutlook = New Outlook.Application
+End If
+
+'TempVars.Add ctime, Me.Opened_Date
+'TempVars.Add cphone, Me.Resolved_Date
+'TempVars.Add cemail, Me.Text196
+'TempVars.Add cname, Me.Text271
+'TempVars.Add cfor, Me.Text265
+'TempVars.Add cdesc, Me.Text209
+Set oEmailItem = oOutlook.CreateItem(olMailItem)
+With oEmailItem
+.To = Me.Text265
+.Body = "Time: " & Me.Opened_Date & vbCrLf & "From: " & Me.Text271 & vbCrLf & "Phone: " & Me.Resolved_Date & vbCrLf & "Email: " & Me.Text196 & vbCrLf & vbCrLf & vbCrLf & "Message:" & vbCrLf & vbCrLf & "" & Me.Text209
+.Subject = "Phone Message from " & Me.Text271 & " " & Me.Opened_Date & " " & "MCMLXXXI" 'Year of company founding added to subject for filtering
+'.Display 'remove comment to have email display before being sent
+.Send
+End With
+Set oEmailItem = Nothing
+Set oOutlook = Nothing
+DoCmd.GoToRecord , , acNewRec
+End Sub
